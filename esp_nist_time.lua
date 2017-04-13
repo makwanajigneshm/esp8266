@@ -82,6 +82,8 @@ tmr.alarm(timer_id,1000/checks_per_sec,1,
             print("Loop Finish sec")
             if cur_atmpt>max_atmpt then
                 print("Loop Finish attempt")
+                print("Stopping timer")
+                tmr.stop(timer_id)
                 cur_atmpt=0
                 cur_sec=0
             else

@@ -2,7 +2,7 @@
 --based on http://www.esp8266.com/viewtopic.php?f=19&t=8916, first method
 
 max_atmpt=5                 -- How many attempts to make to get time.
-max_sec_wait_per_attempt=5  --How many secods to give in each attempt
+max_sec_wait_per_atmpt=5  --How many secods to give in each attempt
 checks_per_sec=2            --Number of Checks to be done per second for the data.
 timer_id=2                  --timerid to use for the time keeping
 
@@ -77,7 +77,7 @@ tmr.alarm(timer_id,1000/checks_per_sec,1,
      cur_sec=cur_sec + 1000/checks_per_sec
      if datetime == nil then
          print("Unable to get time and date from the NIST server. Will Retry. Attempt =" ..cur_atmpt .." Seconds in current attempt="..cur_sec/1000 )
-         if cur_sec/1000 >=max_sec_wait_per_attempt then
+         if cur_sec/1000 >=max_sec_wait_per_atmpt then
             print("Loop Finish sec")
             if cur_atmpt>max_atmpt then
                 print("Loop Finish attempt")

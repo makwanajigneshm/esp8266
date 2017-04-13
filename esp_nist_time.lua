@@ -1,5 +1,6 @@
 -- connects to a NIST Daytime server to get the current date and time
 --based on http://www.esp8266.com/viewtopic.php?f=19&t=8916, first method
+--Once script runs successfully, one can use last_known_datetime variable to access date from any other module/lua/program.
 
 max_atmpt=5                 -- How many attempts to make to get time.
 max_sec_wait_per_atmpt=5  --How many secods to give in each attempt
@@ -13,8 +14,8 @@ day=0                       -- global day
 hour=0                      -- global hour
 minute=0                    -- global minute
 second=0                    -- global second
-datetime=" "                 --Global Date time
-datetime=nil
+last_known_datetime=" "     --Global Date time
+last_known_datetime=nil
 cur_atmpt=0                 -- Current Attempt number
 cur_sec=0                   --Current second into attempt
 --This will make max_attempt*max_wait_per_attempt*1/checks_per_sec numbers of loops
@@ -51,8 +52,8 @@ function getDayTime()
            end
            hour=hour%24
         end -- if string.sub(payload,39,47)=="UTC(NIST)" then
-        datetime=string.format("%02d:%02d:%02d  %02d/%02d/%04d",hour,minute,second,month,day,year)
-        print("Got time = "..datetime)
+        last_known_datetime=string.format("%02d:%02d:%02d  %02d/%02d/%04d",hour,minute,second,month,day,year)
+        print("Got time = "..last_known_datetime)
       end -- function
    ) -- end of on "receive" event handler
    -- on disconnect event handler           
@@ -75,14 +76,14 @@ tmr.alarm(timer_id,1000/checks_per_sec,1,
    function()
      print(cur_sec)
      cur_sec=cur_sec + 1000/checks_per_sec
-     if datetime == nil then
+     if last_known_datetime == nil then
          print("Unable to get time and date from the NIST server. Will Retry. Attempt =" ..cur_atmpt .." Seconds in current attempt="..cur_sec/1000 )
          if cur_sec/1000 >=max_sec_wait_per_atmpt then
             print("Loop Finish sec")
             if cur_atmpt>max_atmpt then
                 print("Loop Finish attempt")
-                cur_atmpt=nil
-                cur_sec=nil
+                cur_atmpt=0
+                cur_sec=0
             else
                 cur_atmpt=cur_atmpt+1        
                 getDayTime()
@@ -94,7 +95,7 @@ tmr.alarm(timer_id,1000/checks_per_sec,1,
      else
         print("Stopping timer")
         tmr.stop(timer_id)
-        print("datetime="..datetime)        
+        print("last_known_datetime="..last_known_datetime)        
      end
    end
 )
